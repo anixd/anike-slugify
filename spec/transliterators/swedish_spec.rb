@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Babosa::Transliterator::Swedish do
+describe Anike::Slugify::Transliterator::Swedish do
   let(:t) { described_class.instance }
   it_behaves_like "a latin transliterator"
 

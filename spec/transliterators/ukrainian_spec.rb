@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Babosa::Transliterator::Ukrainian do
+describe Anike::Slugify::Transliterator::Ukrainian do
   let(:t) { described_class.instance }
   it_behaves_like "a cyrillic transliterator"
 

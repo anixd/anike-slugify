@@ -2,8 +2,8 @@
 
 require "spec_helper"
 
-describe Babosa::Transliterator::Base do
-  let(:t) { Babosa::Transliterator::Base.instance }
+describe Anike::Slugify::Transliterator::Base do
+  let(:t) { Anike::Slugify::Transliterator::Base.instance }
 
   it "should transliterate 'smart' quotes" do
     expect(t.transliterate("’")).to eql("'")

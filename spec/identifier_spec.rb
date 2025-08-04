@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Babosa::Identifier do
+describe Anike::Slugify::Identifier do
   it "should respond_to :empty?" do
     expect("".to_slug).to respond_to(:empty?)
   end
@@ -151,11 +151,11 @@ describe Babosa::Identifier do
     end
 
     it "should raise an error when it would generate an impossible method name" do
-      expect { "1".to_identifier.to_ruby_method }.to raise_error(Babosa::Identifier::Error)
+      expect { "1".to_identifier.to_ruby_method }.to raise_error(Anike::Slugify::Identifier::Error)
     end
 
-    it "should raise Babosa::Error error when the string is nil" do
-      expect { "".to_slug.to_ruby_method }.to raise_error(Babosa::Identifier::Error)
+    it "should raise Anike::Slugify::Error error when the string is nil" do
+      expect { "".to_slug.to_ruby_method }.to raise_error(Anike::Slugify::Identifier::Error)
     end
   end
 end

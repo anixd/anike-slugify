@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Babosa::Transliterator::Hindi do
+describe Anike::Slugify::Transliterator::Hindi do
   let(:t) { described_class.instance }
   it_behaves_like "a hindi transliterator"
 
