@@ -1,37 +1,115 @@
-# Babosa
+# Anike::Slugify
 
-[![Build Status](https://github.com/norman/babosa/actions/workflows/main.yml/badge.svg)](https://github.com/norman/babosa/actions)
+A library for creating slugs with (somewhat quirky) special support for constructed languages (conlangs).
 
-Babosa is a library for creating human-friendly identifiers, aka "slugs". It can
-also be useful for normalizing and sanitizing data.
+Based on the excellent [Babosa](https://github.com/norman/babosa) gem by Norman Clarke.
 
-It is an extraction and improvement of the string code from
-[FriendlyId](http://github.com/norman/friendly_id). I have released this as a
-separate library to help developers who want to create libraries similar to
-FriendlyId.
+## Features
 
-## Features / Usage
+- **Preserves meaningful punctuation**: Keeps leading/trailing dashes for linguistic affixes (like `-ri`, `an-`)
+- **Handles all apostrophe types**: Converts various Unicode apostrophes to dashes
+- **Full transliteration support**: Inherited from Babosa, supports Russian, Latin, Greek, Arabic, and many other scripts
+- **Compatible API**: Drop-in replacement for Babosa in most cases
 
-### Transliterate UTF-8 characters to ASCII
+## Installation
 
-```ruby
-"Gölcük, Turkey".to_slug.transliterate.to_s #=> "Golcuk, Turkey"
-```
-
-### Locale sensitive transliteration, with support for many languages
+Add this line to your application's Gemfile:
 
 ```ruby
-"Jürgen Müller".to_slug.transliterate.to_s           #=> "Jurgen Muller"
-"Jürgen Müller".to_slug.transliterate(:german).to_s  #=> "Juergen Mueller"
+gem 'anike-slugify', github: 'https://github.com/anixd/anike-slugify'
 ```
 
-Currently supported languages include:
+And then execute:
 
+```bash
+bundle install
+```
+
+## Usage
+
+### Basic Usage
+
+```ruby
+require 'anike-slugify'
+
+# Basic slug generation
+"Hello World!".to_anike_slug.normalize
+# => "hello-world"
+
+# Handles apostrophes
+"t'elu".to_anike_slug.normalize
+# => "t-elu"
+
+# Preserves affixes by default
+"-ri".to_anike_slug.normalize
+# => "-ri"
+
+"an-".to_anike_slug.normalize
+# => "an-"
+
+# Disable affix preservation
+"-ri".to_anike_slug.normalize(preserve_affixes: false)
+# => "ri"
+```
+
+### With Transliteration
+
+```ruby
+# Russian
+"Привет мир".to_anike_slug.transliterate(:russian).normalize
+# => "privet-mir"
+
+# Mixed text with apostrophes
+"История языков anik'e и vel'tari".to_anike_slug.transliterate(:russian).normalize
+# => "istoriya-yazykov-anik-e-i-vel-tari"
+
+# Greek
+"Γερμανία".to_anike_slug.transliterate(:greek).normalize
+# => "germania"
+```
+
+### Advanced Options
+
+```ruby
+# Fine-grained control over dash preservation
+text.to_anike_slug.normalize(
+  preserve_leading_dashes: true,   # Keep dashes at start
+  preserve_trailing_dashes: false  # Remove dashes at end
+)
+
+# All normalize options from Babosa still work
+text.to_anike_slug.normalize(
+  transliterate: :russian,
+  max_length: 100,
+  separator: "_"
+)
+```
+
+## Differences from Babosa
+
+1. **Affixes are preserved by default** - leading/trailing dashes are kept unless explicitly disabled with `preserve_affixes: false`
+2. **Extended apostrophe support** - handles: 
+   * U+0027 (ASCII apostrophe)
+   * U+2019 (right single quotation mark)
+   * U+2018 (left single quotation mark)
+   * U+0060 (grave accent)
+   * U+00B4 (acute accent)
+   * U+02BC (modifier letter apostrophe)
+
+   and converts them all to dashes
+3. **Optimized for conlangs** - designed with linguistic notation in mind
+
+## Supported Languages
+
+`Anike::Slugify` inherits all transliterators from Babosa:
+
+* Arabic
 * Bulgarian
 * Danish
 * German
 * Greek
 * Hindi
+* Latin
 * Macedonian
 * Norwegian
 * Romanian
@@ -43,201 +121,33 @@ Currently supported languages include:
 * Ukrainian
 * Vietnamese
 
-Additionally there are generic transliterators for transliterating from the
-Cyrillic alphabet and Latin alphabet with diacritics. The Latin transliterator
-can be used, for example, with Czech. There is also a transliterator named
-"Hindi" which may be sufficient for other Indic languages using Devanagari, but
-I do not know enough to say whether the transliterations would make sense.
+## API Compatibility
 
-I'll gladly accept contributions from fluent speakers to support more languages.
-
-### Strip non-ASCII characters
+The gem provides both `to_anike_slug` and `to_slug` methods for easy migration from Babosa:
 
 ```ruby
-"Gölcük, Turkey".to_slug.to_ascii.to_s #=> "Glck, Turkey"
+# Both work identically
+"text".to_anike_slug.normalize
+"text".to_slug.normalize
 ```
 
-### Truncate by characters
+## Credits
 
-```ruby
-"üüü".to_slug.truncate(2).to_s #=> "üü"
-```
+### Original Babosa Contributors
 
-### Truncate by bytes
+This gem is based on [Babosa](https://github.com/norman/babosa), originally created by Norman Clarke.
 
-This can be useful to ensure the generated slug will fit in a database column
-whose length is limited by bytes rather than UTF-8 characters.
+Babosa has received contributions from many developers. See the [original Babosa repository](https://github.com/norman/babosa#contributors) for the full list of contributors.
 
-```ruby
-"üüü".to_slug.truncate_bytes(2).to_s #=> "ü"
-```
+### Maintainer
 
-### Remove punctuation chars
+- Andrey Gusev ([@anixd](https://github.com/anixd))
 
-```ruby
-"this is, um, **really** cool, huh?".to_slug.word_chars.to_s #=> "this is um really cool huh"
-```
+## License
 
-### All-in-one
+MIT License (same as Babosa)
 
-```ruby
-"Gölcük, Turkey".to_slug.normalize.to_s #=> "golcuk-turkey"
-```
+- Original Babosa Copyright (c) 2010-2021 Norman Clarke
+- Modifications for `Anike::Slugify` Copyright (c) 2024 Andrey Anikushin
 
-### Other stuff
-
-#### Using Babosa With FriendlyId 4+
-
-```ruby
-require "babosa"
-
-class Person < ActiveRecord::Base
-  friendly_id :name, use: :slugged
-
-  def normalize_friendly_id(input)
-    input.to_s.to_slug.normalize(transliterations: :russian).to_s
-  end
-end
-```
-
-#### UTF-8 support
-
-Babosa normalizes all input strings [to NFC](https://en.wikipedia.org/wiki/Unicode_equivalence#Normal_forms).
-
-#### Ruby Method Names
-
-Babosa can generate strings for Ruby method names. (Yes, Ruby 1.9+ can use
-UTF-8 chars in method names, but you may not want to):
-
-
-```ruby
-"this is a method".to_slug.to_ruby_method! #=> this_is_a_method
-"über cool stuff!".to_slug.to_ruby_method! #=> uber_cool_stuff!
-
-# You can also disallow trailing punctuation chars
-"über cool stuff!".to_slug.to_ruby_method(allow_bangs: false) #=> uber_cool_stuff
-```
-
-#### Easy to Extend
-
-You can add custom transliterators for your language with very little code. For
-example here's the transliterator for German:
-
-```ruby
-module Babosa
-  module Transliterator
-    class German < Latin
-      APPROXIMATIONS = {
-        "ä" => "ae",
-        "ö" => "oe",
-        "ü" => "ue",
-        "Ä" => "Ae",
-        "Ö" => "Oe",
-        "Ü" => "Ue"
-      }
-    end
-  end
-end
-```
-
-And a spec (you can use this as a template):
-
-```ruby
-require "spec_helper"
-
-describe Babosa::Transliterator::German do
-  let(:t) { described_class.instance }
-  it_behaves_like "a latin transliterator"
-
-  it "should transliterate Eszett" do
-    t.transliterate("ß").should eql("ss")
-  end
-
-  it "should transliterate vowels with umlauts" do
-    t.transliterate("üöä").should eql("ueoeae")
-  end
-end
-```
-
-### Rails 3.x and higher
-
-Some of Babosa's functionality was added to Active Support 3.0.0.
-
-Babosa now differs from ActiveSupport primarily in that it supports non-Latin
-strings by default, and has per-locale ASCII transliterations already baked-in.
-If you are considering using Babosa with Rails, you may want to first take a
-look at Active Support's
-[transliterate](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-transliterate)
-and
-[parameterize](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-parameterize)
-to see if they suit your needs.
-
-Please see the [API docs](http://rubydoc.info/github/norman/babosa/master/frames) and source code for
-more info.
-
-## Getting it
-
-Babosa can be installed via Rubygems:
-
-    gem install babosa
-
-You can get the source code from its [Github repository](http://github.com/norman/babosa).
-
-## Reporting bugs
-
-Please use Babosa's [Github issue
-tracker](http://github.com/norman/babosa/issues).
-
-
-## Misc
-
-"Babosa" means "slug" in Spanish.
-
-## Maintainers
-
-* [Philip Arndt](https://github.com/parndt)
-* [Norman Clarke](https://github.com/norman/)
-
-## Contributors
-
-Many thanks to the following people for their help:
-
-* [Dmitry A. Ilyashevich](https://github.com/dmitry-ilyashevich) - Deprecation fixes
-* [anhkind](https://github.com/anhkind) - Vietnamese support
-* [Martins Zakis](https://github.com/martins) - Bug fixes
-* [Vassilis Rodokanakis](https://github.com/vrodokanakis) - Greek support
-* [Peco Danajlovski](https://github.com/Vortex) - Macedonian support
-* [Philip Arndt](https://github.com/parndt) - Bug fixes
-* [Jonas Forsberg](https://github.com/himynameisjonas) - Swedish support
-* [Jaroslav Kalistsuk](https://github.com/jarosan) - Greek support
-* [Steven Heidel](https://github.com/stevenheidel) - Bug fixes
-* [Edgars Beigarts](https://github.com/ebeigarts) - Support for multiple transliterators
-* [Tiberiu C. Turbureanu](https://gitorious.org/~tct) - Romanian support
-* [Kim Joar Bekkelund](https://github.com/kjbekkelund) - Norwegian support
-* [Alexey Shkolnikov](https://github.com/grlm) - Russian support
-* [Martin Petrov](https://github.com/martin-petrov) - Bulgarian support
-* [Molte Emil Strange Andersen](https://github.com/molte) - Danish support
-* [Milan Dobrota](https://github.com/milandobrota) - Serbian support
-* [Norman Clarke](https://github.com/norman) - Original author
-
-## Copyright
-
-Copyright (c) 2010-2021 Norman Clarke and contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+See [LICENSE](MIT-LICENSE) file for details.
