@@ -52,4 +52,26 @@ describe "Anike-specific features" do
       expect(result.to_s).to eq("test-")
     end
   end
+
+  describe "complex cases" do
+    it "should handle words with both apostrophes and affixes" do
+      result = "-t'elu".to_anike_slug.normalize
+      expect(result.to_s).to eq("-t-elu")
+    end
+
+    it "should handle multiple apostrophes" do
+      result = "kel'm'e".to_anike_slug.normalize
+      expect(result.to_s).to eq("kel-m-e")
+    end
+
+    it "should handle Russian text with apostrophes" do
+      result = "д'Артаньян".to_anike_slug.transliterate(:russian).normalize
+      expect(result.to_s).to eq("d-artanyan")
+    end
+
+    it "should handle mixed text" do
+      result = "История языков anik'e и vel'tari".to_anike_slug.transliterate(:russian).normalize
+      expect(result.to_s).to eq("istoriya-yazykov-anik-e-i-vel-tari")
+    end
+  end
 end

@@ -79,11 +79,19 @@ describe Anike::Slugify::Identifier do
     end
 
     it "should strip trailing slashes" do
-      expect("ab-".to_slug.normalize).to eql("ab")
+      expect("ab-".to_slug.normalize).to eql("ab-")
     end
 
     it "should strip leading slashes" do
-      expect("-ab".to_slug.normalize).to eql("ab")
+      expect("-ab".to_slug.normalize).to eql("-ab")
+    end
+
+    it "should strip trailing dashes when preserve_affixes is false" do
+      expect("ab-".to_slug.normalize(preserve_affixes: false).to_s).to eql("ab")
+    end
+
+    it "should strip leading dashes when preserve_affixes is false" do
+      expect("-ab".to_slug.normalize(preserve_affixes: false).to_s).to eql("ab")
     end
 
     it "should not modify valid name strings" do
