@@ -4,6 +4,8 @@ coverage
 pkg
 .rbx
 tags
+
 .idea/
 .vscode/
+
 **/.DS_Store
