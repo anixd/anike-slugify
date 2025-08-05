@@ -12,5 +12,6 @@ class String
   alias_method :to_slug, :to_anike_slug
 end
 
+require "anike/slugify/version"
 require "anike/slugify/transliterator/base"
 require "anike/slugify/identifier"

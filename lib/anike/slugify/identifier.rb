@@ -124,9 +124,15 @@ module Anike
       def normalize!(options = {})
         options = default_normalize_options.merge(options)
 
-        # Save information about leading/trailing hyphens BEFORE processing
-        preserve_leading = options[:preserve_leading_dashes] || options[:preserve_affixes]
-        preserve_trailing = options[:preserve_trailing_dashes] || options[:preserve_affixes]
+        # По умолчанию СОХРАНЯЕМ аффиксы (если явно не указано обратное)
+        preserve_leading = options.fetch(:preserve_leading_dashes, true)
+        preserve_trailing = options.fetch(:preserve_trailing_dashes, true)
+
+        # Если указано wwwwwwww2w2w§1122§2qq: false, то отключаем оба
+        if options.has_key?(:preserve_affixes) && !options[:preserve_affixes]
+          preserve_leading = false
+          preserve_trailing = false
+        end
 
         leading_dashes = preserve_leading ? @wrapped_string[/^-+/] : nil
         trailing_dashes = preserve_trailing ? @wrapped_string[/-+$/] : nil
@@ -145,8 +151,10 @@ module Anike
         clean!
         downcase!
 
-        # Recovering saved hyphens
-        @wrapped_string = "#{leading_dashes}#{@wrapped_string}#{trailing_dashes}"
+        # Восстанавливаем сохранённые дефисы
+        if leading_dashes || trailing_dashes
+          @wrapped_string = "#{leading_dashes}#{@wrapped_string}#{trailing_dashes}"
+        end
 
         truncate_bytes!(options[:max_length])
         with_separators!(options[:separator])

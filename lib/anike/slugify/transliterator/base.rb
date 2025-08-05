@@ -14,41 +14,41 @@ module Anike
         include Singleton
 
         APPROXIMATIONS = {
-          "×" => "x",
-          "÷" => "/",
-          "‐" => "-",
-          "‑" => "-",
-          "‒" => "-",
-          "–" => "-",
-          "—" => "-",
-          "―" => "-",
-          "‛" => "'",
-          "“" => '"',
-          "”" => '"',
-          "„" => '"',
-          "‟" => '"',
-          "，" => ",",
-          "。" => ".",
-          "！" => "!",
-          "？" => "?",
-          "、" => ",",
-          "（" => "(",
-          "）" => ")",
-          "【" => "[",
-          "】" => "]",
-          "；" => ";",
-          "：" => ":",
-          "《" => "<",
-          "》" => ">",
+          "×"            => "x",
+          "÷"            => "/",
+          "‐"            => "-",
+          "‑"            => "-",
+          "‒"            => "-",
+          "–"            => "-",
+          "—"            => "-",
+          "―"            => "-",
+          "‛"            => "'",
+          "“"            => '"',
+          "”"            => '"',
+          "„"            => '"',
+          "‟"            => '"',
+          "，"            => ",",
+          "。"            => ".",
+          "！"            => "!",
+          "？"            => "?",
+          "、"            => ",",
+          "（"            => "(",
+          "）"            => ")",
+          "【"            => "[",
+          "】"            => "]",
+          "；"            => ";",
+          "："            => ":",
+          "《"            => "<",
+          "》"            => ">",
           # Change apostrophes to hyphen
-          "'" => "-",  # U+0027 ASCII apostrophe
-          "’" => "-",  # U+2019 right single quotation mark
-          "‘" => "-",  # U+2018 left single quotation mark
-          "`" => "-",  # U+0060 grave accent
-          "´" => "-",  # U+00B4 acute accent
-          "ʼ" => "-",  # U+02BC modifier letter apostrophe
+          "'"            => "-",  # U+0027 ASCII apostrophe
+          "’"            => "-",  # U+2019 right single quotation mark
+          "‘"            => "-",  # U+2018 left single quotation mark
+          "`"            => "-",  # U+0060 grave accent
+          "´"            => "-",  # U+00B4 acute accent
+          "ʼ"            => "-",  # U+02BC modifier letter apostrophe
           # various kinds of space characters
-          "\xc2\xa0" => " ",
+          "\xc2\xa0"     => " ",
           "\xe2\x80\x80" => " ",
           "\xe2\x80\x81" => " ",
           "\xe2\x80\x82" => " ",
@@ -68,10 +68,10 @@ module Anike
 
         def initialize
           @approximations = if self.class < Base
-            self.class.superclass.instance.approximations.dup
-          else
-            {}
-          end
+                              self.class.superclass.instance.approximations.dup
+                            else
+                              {}
+                            end
           self.class.const_get(:APPROXIMATIONS).each_with_object(@approximations) do |object, memo|
             index = object[0].codepoints.shift
             value = object[1].codepoints
