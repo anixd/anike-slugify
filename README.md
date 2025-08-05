@@ -1,7 +1,8 @@
 # Anike::Slugify
 
 A library for creating slugs with (somewhat quirky) special support for constructed languages (conlangs).
-**Based on the excellent [Babosa](https://github.com/norman/babosa) gem by Norman Clarke.**
+
+Based on the excellent [Babosa](https://github.com/norman/babosa) gem by Norman Clarke.
 
 ## Features
 
@@ -15,14 +16,22 @@ A library for creating slugs with (somewhat quirky) special support for construc
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'anike-slugify', github: 'your-username/anike-slugify'
+gem 'anike-slugify', github: 'anixd/anike-slugify', tag: 'v1.0.1'
 ```
 
-And then execute:
+or
+
+```ruby
+gem 'anike-slugify', github: 'anixd/anike-slugify', branch: 'master'
+```
+
+
+Then run:
 
 ```bash
 bundle install
 ```
+
 
 ## Usage
 
@@ -51,7 +60,7 @@ require 'anike-slugify'
 # => "ri"
 ```
 
-### With Transliteration
+### With transliteration
 
 ```ruby
 # Russian
@@ -84,15 +93,25 @@ text.to_anike_slug.normalize(
 )
 ```
 
-## Differences from Babosa
+## Differences from `Babosa`
 
 1. **Affixes are preserved by default** - leading/trailing dashes are kept unless explicitly disabled with `preserve_affixes: false`
-2. **Extended apostrophe support** - handles ', ', ', `, ´, ʼ and converts them all to dashes
+2. **Extended apostrophe support** - handles:
+
+   - U+0027 (ASCII apostrophe)
+   - U+2019 (right single quotation mark)
+   - U+2018 (left single quotation mark)
+   - U+0060 (grave accent)
+   - U+00B4 (acute accent)
+   - U+02BC (modifier letter apostrophe)
+
+   and converts them all to dashes
 3. **Optimized for conlangs** - designed with linguistic notation in mind
+
 
 ## Supported Languages
 
-Anike::Slugify inherits all transliterators from Babosa:
+`Anike::Slugify` inherits all transliterators from `Babosa`:
 
 * Arabic
 * Bulgarian
@@ -114,7 +133,7 @@ Anike::Slugify inherits all transliterators from Babosa:
 
 ## API Compatibility
 
-The gem provides both `to_anike_slug` and `to_slug` methods for easy migration from Babosa:
+The gem provides both `to_anike_slug` and `to_slug` methods for easy migration from `Babosa`:
 
 ```ruby
 # Both work identically
@@ -124,21 +143,23 @@ The gem provides both `to_anike_slug` and `to_slug` methods for easy migration f
 
 ## Credits
 
-### Original Babosa Contributors
+### Original `Babosa` Contributors
 
 This gem is based on [Babosa](https://github.com/norman/babosa), originally created by Norman Clarke.
 
-Babosa has received contributions from many developers. See the [original Babosa repository](https://github.com/norman/babosa#contributors) for the full list of contributors.
+`Babosa` has received contributions from many developers. See the [original Babosa repository](https://github.com/norman/babosa#contributors) for the full list of contributors.
 
-### Anike::Slugify Maintainer
+
+### Maintainer
 
 - Andrey Gusev ([@anixd](https://github.com/anixd))
 
+
 ## License
 
-MIT License (same as Babosa)
+MIT License (same as `Babosa`)
 
-- Original Babosa Copyright (c) 2010-2021 Norman Clarke
-- Modifications for `Anike::Slugify` Copyright (c) 2024 Andrey Anikushin
+- Original `Babosa` Copyright (c) 2010 Norman Clarke
+- Modifications for `Anike::Slugify` Copyright (c) 2025 Andrey Gusev
 
 See [LICENSE](MIT-LICENSE) file for details.
