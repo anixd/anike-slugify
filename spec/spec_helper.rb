@@ -6,7 +6,7 @@ if ENV["COV"]
 end
 
 require "bundler/setup"
-require "babosa"
+require "anike-slugify"
 
 shared_examples_for "a latin transliterator" do
   let(:t) { described_class.instance }
